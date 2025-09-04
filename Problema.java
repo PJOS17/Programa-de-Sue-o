@@ -1,35 +1,17 @@
-import java.util.ArrayList;
-import java.util.List;
+    import java.util.ArrayList;
 
-public class Problema {
+    public class Problema {
+        private ArrayList<String> problemasSueno;
 
-    
-    private List<String> problemaSueno;
+        public Problema() {
+            problemasSueno = new ArrayList<>();
+            problemasSueno.add("Insomnio");
+            problemasSueno.add("Pesadillas");
+            problemasSueno.add("Apnea del sueño");
+            problemasSueno.add("Narcolepsia");
+        }
 
-    public Problema(String problemaSueno) {
-        this.problemaSueno = new ArrayList<>();
-        this.problemaSueno.add(problemaSueno);
+        public ArrayList<String> getProblemasSueno() {
+            return problemasSueno;
+        }
     }
-    public static Problema newProblemaSuenoInsomnio() {
-        return new Problema("Insomnio");
-    }
-
-    public static Problema newProblemaSuenoPesadillas() {
-        return new Problema("Pesadillas");
-    }
-
-    public static Problema newProblemaSuenoApnea() {
-        return new Problema("Apnea de sueño");
-    }
-
-    public static Problema newProblemaSuenoNarcolepsia() {
-        return new Problema("Narcolepsia");
-    }
-
-    public List<String> getProblemaSueno() {
-        return problemaSueno;
-    }
-    public void agregarProblema(String problema) {
-        this.problemaSueno.add(problema);
-    }
-}

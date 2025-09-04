@@ -1,50 +1,39 @@
+import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalTime;
 
 public class RegistroSueno {
-        private Usuario persona;
-        private LocalTime horaDormir;
-        private int horaSueno;
-        private int calidadSueno;
-        private String observaciones;
+    private Usuario persona;
+    private LocalDate fecha;
+    private LocalTime horaDormir;
+    private LocalTime horaDespertar;
+    private int calidadSueno;
+    private String observaciones;
 
-public RegistroSueno(Usuario persona, LocalTime horaDormir, int horaSueno, int calidadSueno, String observaciones) {
+    public RegistroSueno(Usuario persona, LocalDate fecha, LocalTime horaDormir, LocalTime horaDespertar,
+                         int calidadSueno, String observaciones) {
         this.persona = persona;
+        this.fecha = fecha;
         this.horaDormir = horaDormir;
-        this.horaSueno = horaSueno;
+        this.horaDespertar = horaDespertar;
         this.calidadSueno = calidadSueno;
         this.observaciones = observaciones;
-}
+    }
 
-public int calcularDuracion() {
-        return horaSueno;
-}
+    public int calcularDuracion() {
+        Duration d = Duration.between(horaDormir, horaDespertar);
+        return (int) d.toHours();
+    }
 
-public String mostrarResumen() {
-        return "Resumen de sueño:\n" +
-        "Usuario: " + persona.getNombre() + "\n" +
-        "Hora de dormir: " + horaDormir + "\n" +
-        "Horas dormidas: " + horaSueno + "\n" +
-        "Calidad del sueño: " + calidadSueno + "/10\n" +
-        "Observaciones: " + observaciones;
-}
+    public String mostrarResumen() {
+        return "Registro de sueño (" + fecha + "):\n" +
+               "Hora de dormir: " + horaDormir +
+               "\nHora de despertar: " + horaDespertar +
+               "\nDuración: " + calcularDuracion() + " horas" +
+               "\nCalidad: " + calidadSueno +
+               "\nObservaciones: " + observaciones;
+    }
 
-public LocalTime getHoraDormir() {
-        return horaDormir;
-}
-
-public int getHoraSueno() {
-        return horaSueno;
-}
-
-public int getCalidad() {
-        return calidadSueno;
-}
-
-        public String getObservaciones() {
-        return observaciones;
-}
-
-        public Usuario getPersona() {
-        return persona;
-}
+    public int getCalidadSueno() { return calidadSueno; }
+    public String getObservaciones() { return observaciones; }
 }

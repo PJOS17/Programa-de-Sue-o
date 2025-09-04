@@ -1,35 +1,89 @@
-import java.util.ArrayList;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 public class ControladorSueno {
-    private ArrayList<RegistroSueno> registros;
+    private Usuario usuario;
+    private AnalisisSueno analisis;
+    private VistaSueno vistaSueno;
 
-    public ControladorSueno() {
-        registros = new ArrayList<>();
+    // Constructor recibe la vista creada en mainSS
+    public ControladorSueno(VistaSueno vistaSueno) {
+        this.vistaSueno = vistaSueno;
+        this.analisis = new AnalisisSueno();
+        crearUsuario();
     }
 
-    public void agregarRegistro(RegistroSueno registro) {
-        registros.add(registro);
+    // Crear usuario pidiendo datos a la vista
+    private void crearUsuario() {
+        vistaSueno.mostrarMensaje("Ingrese los datos del usuario:");
+        String nombre = vistaSueno.leerNombre();
+        int edad = vistaSueno.leerEdad();
+        String genero = vistaSueno.leerGenero();
+        double peso = vistaSueno.leerPeso();
+        double altura = vistaSueno.leerAltura();
+
+        this.usuario = new Usuario(nombre, edad, genero, peso, altura);
+        vistaSueno.mostrarMensaje("Usuario creado correctamente.\n");
     }
 
-    public ArrayList<RegistroSueno> obtenerRegistros() {
-        return registros;
+    // Editar perfil del usuario
+    private void editarUsuario() {
+        vistaSueno.mostrarMensaje("Actualizar datos del usuario:");
+        String nombre = vistaSueno.leerNombre();
+        int edad = vistaSueno.leerEdad();
+        String genero = vistaSueno.leerGenero();
+        double peso = vistaSueno.leerPeso();
+        double altura = vistaSueno.leerAltura();
+
+        usuario.actualizarDatos(nombre, edad, genero, peso, altura);
+        vistaSueno.mostrarMensaje("Perfil actualizado correctamente.\n");
     }
 
-    public double calcularPromedioHorasDormidas() {
-        if (registros.isEmpty()) return 0;
-        int totalHoras = 0;
-        for (RegistroSueno r : registros) {
-            totalHoras += r.getHoraSueno();
+    private void registrarSueno() {
+        vistaSueno.mostrarMensaje("Registrar nuevo sueño:");
+        LocalDate fecha = vistaSueno.leerFecha();
+        LocalTime dormir = vistaSueno.leerHoraDormir();
+        LocalTime despertar = vistaSueno.leerHoraDespertar();
+        int calidad = vistaSueno.leerCalidad();
+        String observaciones = vistaSueno.leerObservaciones();
+
+        RegistroSueno registro = new RegistroSueno(usuario, fecha, dormir, despertar, calidad, observaciones);
+        analisis.agregarRegistro(registro);
+        vistaSueno.mostrarMensaje("Registro agregado correctamente.\n");
+    }
+
+    public void ejecutar() {
+        boolean salir = false;
+
+        while (!salir) {
+            int opcion = vistaSueno.mostrarMenu();
+
+            switch (opcion) {
+                case 1:
+                    registrarSueno();
+                    break;
+                case 2:
+                    vistaSueno.mostrarMensaje(usuario.mostrarPerfil());
+                    break;
+                case 3:
+                    editarUsuario();
+                    break;
+                case 4:
+                    vistaSueno.mostrarMensaje(analisis.mostrarTendencia());
+                    break;
+                case 5:
+                    vistaSueno.mostrarMensaje(analisis.generarRecomendaciones(usuario));
+                    break;
+                case 6:
+                    vistaSueno.mostrarMensaje("Función de gráfica aún no implementada.");
+                    break;
+                case 7:
+                    salir = true;
+                    vistaSueno.mostrarMensaje("Saliendo del programa...");
+                    break;
+                default:
+                    vistaSueno.mostrarMensaje("Opción inválida. Intente nuevamente.");
+            }
         }
-        return (double) totalHoras / registros.size();
-    }
-
-    public double calcularPromedioCalidadSueno() {
-        if (registros.isEmpty()) return 0;
-        int totalCalidad = 0;
-        for (RegistroSueno r : registros) {
-            totalCalidad += r.getCalidad();
-        }
-        return (double) totalCalidad / registros.size();
     }
 }
