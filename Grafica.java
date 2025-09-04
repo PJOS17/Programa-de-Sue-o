@@ -43,16 +43,19 @@ public class Grafica {
         }
         
         StringBuilder sb = new StringBuilder();
-        sb.append("\n--- GRÁFICA DE TENDENCIA DE SUEÑO ---\n");
-                int maxRegistros = Math.min(7, analisis.getRegistros().size());
-        int maxHoras = 12;
+        sb.append("\n=== GRÁFICA DE TENDENCIA DE SUEÑO ===\n");
+
+        List<RegistroSueno> registros = analisis.getRegistros();
+
+        int maxRegistros = Math.min(7, registros.size());
+        int maxHoras = 12; 
         
         for (int i = 0; i < maxRegistros; i++) {
-            RegistroSueno registro = analisis.getRegistros().get(i);
+            RegistroSueno registro = registros.get(i);
             String fecha = registro.getFecha().toString();
             int horas = registro.getHorasSueno();
             int calidad = registro.getCalidadSueno();
-            
+
             int longitudBarra = (int) Math.round((double) horas / maxHoras * 50);
             
             sb.append(String.format("%s: %s %d hrs | Calidad: %d/10%n", 
@@ -61,6 +64,8 @@ public class Grafica {
                              horas, 
                              calidad));
         }
+        
+
         sb.append("\nEscala: Cada █ representa aproximadamente ");
         sb.append(String.format("%.1f", maxHoras / 50.0));
         sb.append(" horas\n");

@@ -37,4 +37,8 @@ public class RegistroSueno {
                ", Horas dormidas: " + horasSueno + ", Calidad: " + calidadSueno +
                ", Observaciones: " + observaciones;
     }
+    
+    public LocalDate getFecha() {
+    return fecha;
+    }
 }

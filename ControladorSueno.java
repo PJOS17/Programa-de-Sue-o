@@ -74,8 +74,21 @@ public class ControladorSueno {
                     vista.mostrarMensaje(analisis.generarRecomendaciones(usuario)); 
                     break;
                 case 7: 
-                    // Mostrar gráfica usando JavaFX
-                    Grafica.mostrarGrafica(analisis);
+                    int opcionGrafica = vista.mostrarMenuGraficas();
+                    switch (opcionGrafica) {
+                    case 1:
+                        vista.mostrarMensaje(Grafica.generarGraficaTexto(analisis));
+                        break;
+                    case 2:
+                        vista.mostrarMensaje(Grafica.generarGraficaTendencia(analisis));
+                        break;
+                    case 3:
+                        vista.mostrarMensaje(Grafica.generarGraficaAvanzada(analisis));
+                        break;
+                    default:
+                        vista.mostrarMensaje("Opción inválida.");
+                        break;
+                    }
                     break;
                 case 8: 
                     salir = true; 
@@ -86,5 +99,20 @@ public class ControladorSueno {
                     break;
             }
         }
+    }
+    public int mostrarMenuGraficas() {
+        System.out.println("\n--- TIPO DE GRÁFICA ---");
+        System.out.println("1. Gráfica de texto simple");
+        System.out.println("2. Gráfica de tendencia");
+        System.out.println("3. Gráfica avanzada");
+        System.out.print("Seleccione el tipo de gráfica: ");
+        
+        while (!sc.hasNextInt()) {
+            sc.next();
+            System.out.print("Ingrese un número válido: ");
+        }
+        int opcion = sc.nextInt();
+        sc.nextLine(); 
+        return opcion;
     }
 }
