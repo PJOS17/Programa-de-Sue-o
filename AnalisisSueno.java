@@ -7,90 +7,72 @@ public class AnalisisSueno {
         registros = new ArrayList<>();
     }
 
-    public void agregarRegistro(RegistroSueno registro) {
-        registros.add(registro);
+    public void agregarRegistro(RegistroSueno r) {
+        registros.add(r);
     }
 
-    public double calcularPromedioHorasDormidas() {
+    public double promedioHoras() {
         if (registros.isEmpty()) return 0;
-        double total = 0;
-        for (RegistroSueno r : registros) {
-            total += r.calcularDuracion();
-        }
-        return total / registros.size();
+        double suma = 0;
+        for (RegistroSueno r : registros) suma += r.getHorasSueno();
+        return suma / registros.size();
     }
 
-    public double calcularPromedioCalidadSueno() {
+    public double promedioCalidad() {
         if (registros.isEmpty()) return 0;
-        double total = 0;
-        for (RegistroSueno r : registros) {
-            total += r.getCalidadSueno();
+        double suma = 0;
+        for (RegistroSueno r : registros) suma += r.getCalidadSueno();
+        return suma / registros.size();
+    }
+
+    public String mostrarTendencia() {
+        if (registros.isEmpty()) return "No hay registros aún.";
+
+        int n = Math.min(3, registros.size());
+        double inicioHoras = 0, finHoras = 0;
+        double inicioCalidad = 0, finCalidad = 0;
+
+        for (int i = 0; i < n; i++) {
+            inicioHoras += registros.get(i).getHorasSueno();
+            inicioCalidad += registros.get(i).getCalidadSueno();
         }
-        return total / registros.size();
+
+        for (int i = registros.size() - n; i < registros.size(); i++) {
+            finHoras += registros.get(i).getHorasSueno();
+            finCalidad += registros.get(i).getCalidadSueno();
+        }
+
+        inicioHoras /= n; inicioCalidad /= n;
+        finHoras /= n; finCalidad /= n;
+
+        StringBuilder tendencia = new StringBuilder("Tendencia del sueño:\n");
+        tendencia.append(finHoras > inicioHoras ? "- Duración mejorando\n" :
+                         finHoras < inicioHoras ? "- Duración disminuyendo\n" : "- Duración estable\n");
+        tendencia.append(finCalidad > inicioCalidad ? "- Calidad mejorando\n" :
+                         finCalidad < inicioCalidad ? "- Calidad disminuyendo\n" : "- Calidad estable\n");
+
+        return tendencia.toString();
     }
 
     public String generarRecomendaciones(Usuario u) {
         StringBuilder rec = new StringBuilder("Recomendaciones:\n");
-        double promHoras = calcularPromedioHorasDormidas();
-        double promCalidad = calcularPromedioCalidadSueno();
+        double promHoras = promedioHoras();
+        double promCalidad = promedioCalidad();
 
-        if (promHoras < 6) rec.append("- Intenta dormir al menos 7 horas.\n");
-        else if (promHoras < 7) rec.append("- Tu descanso es aceptable, pero podrías mejorarlo.\n");
+        if (promHoras < 6) rec.append("- Dormir al menos 7 horas.\n");
+        else if (promHoras < 7) rec.append("- Descanso aceptable, mejorar.\n");
         else rec.append("- Buen trabajo, mantén tu rutina.\n");
 
         if (promCalidad < 5) rec.append("- Evita pantallas antes de dormir.\n");
         else if (promCalidad < 7) rec.append("- Prueba técnicas de relajación.\n");
         else rec.append("- Tu sueño es de buena calidad.\n");
 
-        if (u.getEdad() > 60) rec.append("- A tu edad, mantén horarios regulares y evita siestas largas.\n");
+        if (u.getEdad() > 60) rec.append("- Mantén horarios regulares y evita siestas largas.\n");
         if (u.getPeso() > 100 && promCalidad < 6)
-            rec.append("- Tu peso podría estar afectando el sueño, consulta a un especialista.\n");
+            rec.append("- Consulta a un especialista sobre tu peso y sueño.\n");
 
         return rec.toString();
     }
-    public String mostrarTendencia() {
-    if (registros.isEmpty()) return "No hay registros para mostrar tendencia.";
 
-    int n = Math.min(3, registros.size()); // Usamos las primeras y últimas 3 entradas (o menos si hay menos registros)
-
-    double promedioInicioHoras = 0;
-    double promedioFinalHoras = 0;
-    double promedioInicioCalidad = 0;
-    double promedioFinalCalidad = 0;
-
-    // Promedio primeras n entradas
-    for (int i = 0; i < n; i++) {
-        promedioInicioHoras += registros.get(i).calcularDuracion();
-        promedioInicioCalidad += registros.get(i).getCalidadSueno();
-    }
-    promedioInicioHoras /= n;
-    promedioInicioCalidad /= n;
-
-    // Promedio últimas n entradas
-    for (int i = registros.size() - n; i < registros.size(); i++) {
-        promedioFinalHoras += registros.get(i).calcularDuracion();
-        promedioFinalCalidad += registros.get(i).getCalidadSueno();
-    }
-    promedioFinalHoras /= n;
-    promedioFinalCalidad /= n;
-
-    StringBuilder tendencia = new StringBuilder("Tendencia de tu sueño:\n");
-
-    if (promedioFinalHoras > promedioInicioHoras)
-        tendencia.append("- La duración de tu sueño está mejorando.\n");
-    else if (promedioFinalHoras < promedioInicioHoras)
-        tendencia.append("- La duración de tu sueño ha disminuido.\n");
-    else
-        tendencia.append("- La duración de tu sueño se mantiene estable.\n");
-
-    if (promedioFinalCalidad > promedioInicioCalidad)
-        tendencia.append("- La calidad de tu sueño está mejorando.\n");
-    else if (promedioFinalCalidad < promedioInicioCalidad)
-        tendencia.append("- La calidad de tu sueño ha disminuido.\n");
-    else
-        tendencia.append("- La calidad de tu sueño se mantiene estable.\n");
-
-    return tendencia.toString();
-}
-
+    public ArrayList<RegistroSueno> getRegistros() { return registros; }
 }

@@ -13,6 +13,14 @@ public class Usuario {
         this.altura = altura;
     }
 
+    public void actualizarDatos(String nombre, int edad, String genero, double peso, double altura) {
+        this.nombre = nombre;
+        this.edad = edad;
+        this.genero = genero;
+        this.peso = peso;
+        this.altura = altura;
+    }
+
     public String mostrarPerfil() {
         return "Perfil Usuario:\n" +
                "Nombre: " + nombre +
@@ -20,14 +28,6 @@ public class Usuario {
                "\nGénero: " + genero +
                "\nPeso: " + peso + " kg" +
                "\nAltura: " + altura + " m";
-    }
-
-    public void actualizarDatos(String nombre, int edad, String genero, double peso, double altura) {
-        this.nombre = nombre;
-        this.edad = edad;
-        this.genero = genero;
-        this.peso = peso;
-        this.altura = altura;
     }
 
     public String getNombre() { return nombre; }
