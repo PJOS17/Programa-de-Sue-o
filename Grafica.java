@@ -1,6 +1,6 @@
-import javax.swing.*;
 import java.awt.*;
 import java.util.List;
+import javax.swing.*;
 
 public class Grafica extends JPanel {
     private List<Double> horas;
