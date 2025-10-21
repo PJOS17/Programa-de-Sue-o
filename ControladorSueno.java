@@ -59,8 +59,12 @@ public class ControladorSueno {
                     registrarSueno(); 
                     break;
                 case 2:
-                    for (RegistroSueno r : analisis.getRegistros())
-                        vista.mostrarMensaje(r.mostrarResumen());
+                    if (analisis.getRegistros().isEmpty()) {
+                        vista.mostrarMensaje("No hay registros aún.");
+                    } else {
+                        for (RegistroSueno r : analisis.getRegistros())
+                            vista.mostrarMensaje(r.mostrarResumen());
+                    }
                     break;
                 case 3: 
                     vista.mostrarMensaje(usuario.mostrarPerfil()); 
@@ -78,7 +82,7 @@ public class ControladorSueno {
                     if (analisis.getRegistros().isEmpty()) {
                         vista.mostrarMensaje("No hay registros para graficar aún.");
                     } else {
-                        SwingUtilities.invokeLater(() -> new GUISueno(analisis).setVisible(true));
+                        abrirGrafica();
                     }
                     break;
                 case 8: 
@@ -91,19 +95,12 @@ public class ControladorSueno {
             }
         }
     }
-    public int mostrarMenuGraficas() {
-        System.out.println("\n--- TIPO DE GRÁFICA ---");
-        System.out.println("1. Gráfica de texto simple");
-        System.out.println("2. Gráfica de tendencia");
-        System.out.println("3. Gráfica avanzada");
-        System.out.print("Seleccione el tipo de gráfica: ");
-        
-        while (!sc.hasNextInt()) {
-            sc.next();
-            System.out.print("Ingrese un número válido: ");
-        }
-        int opcion = sc.nextInt();
-        sc.nextLine(); 
-        return opcion;
+
+
+    private void abrirGrafica() {
+        SwingUtilities.invokeLater(() -> {
+            GUISueno gui = new GUISueno(analisis);
+            gui.setVisible(true);
+        });
     }
 }

@@ -147,7 +147,7 @@ public class VistaSueno {
         System.out.println(VERDE + "\n=== " + titulo + " ===" + RESET);
     }
 
-    
+
     public static void main(String[] args) {
         VistaSueno vista = new VistaSueno();
         ControladorSueno app = new ControladorSueno(vista);
