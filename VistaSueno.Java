@@ -3,46 +3,42 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 public class VistaSueno {
-    private Scanner sc = new Scanner(System.in);
+    private final Scanner sc = new Scanner(System.in);
 
+    
+    private static final String VERDE = "\u001B[32m";
+    private static final String AMARILLO = "\u001B[33m";
+    private static final String ROJO = "\u001B[31m";
+    private static final String RESET = "\u001B[0m";
+
+    
     public int mostrarMenu() {
-        System.out.println("\n--- MENÚ PRINCIPAL ---");
-        System.out.println("1. Registrar nuevo sueño");
-        System.out.println("2. Ver registros anteriores");
-        System.out.println("3. Ver perfil del usuario");
-        System.out.println("4. Editar perfil del usuario");
-        System.out.println("5. Ver análisis del sueño");
-        System.out.println("6. Ver recomendaciones personalizadas");
-        System.out.println("7. Ver gráfica de sueño");
-        System.out.println("8. Salir");
-        System.out.print("Seleccione una opción: ");
-        
-        while (!sc.hasNextInt()) {
-            sc.next();
-            System.out.print("Ingrese un número válido: ");
-        }
-        int opcion = sc.nextInt();
-        sc.nextLine(); 
+        int opcion;
+        do {
+            mostrarTitulo("MENÚ PRINCIPAL");
+            System.out.println("1. Registrar nuevo sueño");
+            System.out.println("2. Ver registros anteriores");
+            System.out.println("3. Ver perfil del usuario");
+            System.out.println("4. Editar perfil del usuario");
+            System.out.println("5. Ver análisis del sueño");
+            System.out.println("6. Ver recomendaciones personalizadas");
+            System.out.println("7. Ver gráfica de sueño");
+            System.out.println("8. Salir");
+
+            opcion = leerEntero("Seleccione una opción", 1, 8);
+        } while (opcion < 1 || opcion > 8);
+
         return opcion;
     }
 
+    
     public String leerNombre() {
         System.out.print("Nombre: ");
-        return sc.nextLine();
+        return sc.nextLine().trim();
     }
 
     public int leerEdad() {
-        int edad;
-        do {
-            System.out.print("Edad (1-110): ");
-            while (!sc.hasNextInt()) {
-                sc.next();
-                System.out.print("Ingrese una edad válida (1-110): ");
-            }
-            edad = sc.nextInt();
-            sc.nextLine();
-        } while (edad <= 0 || edad > 110);
-        return edad;
+        return leerEntero("Edad", 1, 110);
     }
 
     public String leerGenero() {
@@ -50,109 +46,108 @@ public class VistaSueno {
         do {
             System.out.print("Género (hombre/mujer): ");
             genero = sc.nextLine().trim().toLowerCase();
+            if (!genero.equals("hombre") && !genero.equals("mujer")) {
+                System.out.println(ROJO + "Ingrese 'hombre' o 'mujer'." + RESET);
+            }
         } while (!genero.equals("hombre") && !genero.equals("mujer"));
         return genero;
     }
 
     public double leerPeso() {
-        double peso;
-        do {
-            System.out.print("Peso (30-300 kg): ");
-            while (!sc.hasNextDouble()) {
-                sc.next();
-                System.out.print("Ingrese un peso válido (30-300 kg): ");
-            }
-            peso = sc.nextDouble();
-            sc.nextLine();
-        } while (peso < 30 || peso > 300);
-        return peso;
+        return leerDouble("Peso (kg)", 30, 300);
     }
 
     public double leerAltura() {
-        double altura;
-        do {
-            System.out.print("Altura (0.5-2.5 m): ");
-            while (!sc.hasNextDouble()) {
-                sc.next();
-                System.out.print("Ingrese una altura válida (0.5-2.5 m): ");
-            }
-            altura = sc.nextDouble();
-            sc.nextLine();
-        } while (altura < 0.5 || altura > 2.5);
-        return altura;
+        return leerDouble("Altura (m)", 0.5, 2.5);
     }
 
+    
     public LocalDate leerFecha() {
-        LocalDate fecha = null;
-        boolean valido = false;
-        do {
+        while (true) {
             System.out.print("Fecha (YYYY-MM-DD): ");
-            String entrada = sc.nextLine();
+            String entrada = sc.nextLine().trim();
             try {
-                fecha = LocalDate.parse(entrada);
-                valido = true;
+                return LocalDate.parse(entrada);
             } catch (Exception e) {
-                System.out.println("Formato de fecha inválido. Intente nuevamente.");
+                System.out.println(ROJO + "Formato de fecha inválido. Ejemplo: 2025-10-20" + RESET);
             }
-        } while (!valido);
-        return fecha;
+        }
     }
 
     public LocalTime leerHoraDormir() {
-        LocalTime hora = null;
-        boolean valido = false;
-        do {
-            System.out.print("Hora dormir (HH:MM): ");
-            String entrada = sc.nextLine();
-            try {
-                hora = LocalTime.parse(entrada);
-                valido = true;
-            } catch (Exception e) {
-                System.out.println("Formato de hora inválido. Intente nuevamente.");
-            }
-        } while (!valido);
-        return hora;
+        return leerHora("Hora de dormir");
     }
 
     public LocalTime leerHoraDespertar() {
-        LocalTime hora = null;
-        boolean valido = false;
-        do {
-            System.out.print("Hora despertar (HH:MM): ");
-            String entrada = sc.nextLine();
+        return leerHora("Hora de despertar");
+    }
+
+    private LocalTime leerHora(String mensaje) {
+        while (true) {
+            System.out.print(mensaje + " (HH:MM): ");
+            String entrada = sc.nextLine().trim();
             try {
-                hora = LocalTime.parse(entrada);
-                valido = true;
+                return LocalTime.parse(entrada);
             } catch (Exception e) {
-                System.out.println("Formato de hora inválido. Intente nuevamente.");
+                System.out.println(ROJO + "Formato de hora inválido. Ejemplo: 23:15" + RESET);
             }
-        } while (!valido);
-        return hora;
+        }
     }
 
     public int leerCalidad() {
-        int calidad;
-        do {
-            System.out.print("Calidad del sueño (1-10): ");
-            while (!sc.hasNextInt()) {
-                sc.next();
-                System.out.print("Ingrese una calidad válida (1-10): ");
-            }
-            calidad = sc.nextInt();
-            sc.nextLine();
-        } while (calidad < 1 || calidad > 10);
-        return calidad;
+        return leerEntero("Calidad del sueño (1-10)", 1, 10);
     }
 
     public String leerObservaciones() {
         System.out.print("Observaciones: ");
-        return sc.nextLine();
+        return sc.nextLine().trim();
     }
 
+    
+    private int leerEntero(String mensaje, int min, int max) {
+        int valor;
+        do {
+            System.out.print(mensaje + " (" + min + "-" + max + "): ");
+            while (!sc.hasNextInt()) {
+                sc.next(); // limpiar entrada
+                System.out.print("Ingrese un número válido (" + min + "-" + max + "): ");
+            }
+            valor = sc.nextInt();
+            sc.nextLine();
+            if (valor < min || valor > max) {
+                System.out.println(ROJO + "Valor fuera de rango." + RESET);
+            }
+        } while (valor < min || valor > max);
+        return valor;
+    }
+
+    private double leerDouble(String mensaje, double min, double max) {
+        double valor;
+        do {
+            System.out.print(mensaje + " (" + min + "-" + max + "): ");
+            while (!sc.hasNextDouble()) {
+                sc.next(); // limpiar entrada
+                System.out.print("Ingrese un número válido (" + min + "-" + max + "): ");
+            }
+            valor = sc.nextDouble();
+            sc.nextLine();
+            if (valor < min || valor > max) {
+                System.out.println(ROJO + "Valor fuera de rango." + RESET);
+            }
+        } while (valor < min || valor > max);
+        return valor;
+    }
+
+    
     public void mostrarMensaje(String msg) {
-        System.out.println(msg);
+        System.out.println(AMARILLO + msg + RESET);
     }
 
+    public void mostrarTitulo(String titulo) {
+        System.out.println(VERDE + "\n=== " + titulo + " ===" + RESET);
+    }
+
+    
     public static void main(String[] args) {
         VistaSueno vista = new VistaSueno();
         ControladorSueno app = new ControladorSueno(vista);
