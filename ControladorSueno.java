@@ -1,5 +1,6 @@
 import java.time.LocalDate;
 import java.time.LocalTime;
+import javax.swing.SwingUtilities;
 
 public class ControladorSueno {
     private Usuario usuario;
@@ -73,21 +74,11 @@ public class ControladorSueno {
                 case 6: 
                     vista.mostrarMensaje(analisis.generarRecomendaciones(usuario)); 
                     break;
-                case 7: 
-                    int opcionGrafica = vista.mostrarMenuGraficas();
-                    switch (opcionGrafica) {
-                    case 1:
-                        vista.mostrarMensaje(Grafica.generarGraficaTexto(analisis));
-                        break;
-                    case 2:
-                        vista.mostrarMensaje(Grafica.generarGraficaTendencia(analisis));
-                        break;
-                    case 3:
-                        vista.mostrarMensaje(Grafica.generarGraficaAvanzada(analisis));
-                        break;
-                    default:
-                        vista.mostrarMensaje("Opción inválida.");
-                        break;
+                case 7:
+                    if (analisis.getRegistros().isEmpty()) {
+                        vista.mostrarMensaje("No hay registros para graficar aún.");
+                    } else {
+                        SwingUtilities.invokeLater(() -> new GUISueno(analisis).setVisible(true));
                     }
                     break;
                 case 8: 

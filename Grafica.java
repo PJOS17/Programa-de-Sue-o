@@ -1,117 +1,92 @@
+import javax.swing.*;
+import java.awt.*;
 import java.util.List;
 
-public class Grafica {
-    
-    public static String generarGraficaTexto(AnalisisSueno analisis) {
-        if (analisis == null || analisis.getRegistros().isEmpty()) {
-            return "No hay datos para mostrar la gráfica.";
-        }
-        
-        StringBuilder sb = new StringBuilder();
-        sb.append("\n--- GRÁFICA DE SUEÑO (MODO TEXTO) ---\n");
-        sb.append("Leyenda: ■ = 1 hora de sueño, ★ = 1 punto de calidad\n");
-        sb.append("-----------------------------------------\n");
-        
-        for (RegistroSueno registro : analisis.getRegistros()) {
-            String fecha = registro.getFecha().toString();
-            int horas = registro.getHorasSueno();
-            int calidad = registro.getCalidadSueno();
+public class Grafica extends JPanel {
+    private List<Double> horas;
+    private List<Double> calidad;
+    private List<String> fechas;
 
-            String barraHoras = repetirCaracter('■', horas);
-            String barraCalidad = repetirCaracter('★', calidad);
-            
-            sb.append(String.format("%s: %s (%d hrs)%n", fecha, barraHoras, horas));
-            sb.append(String.format("Calidad: %s (%d/10)%n", barraCalidad, calidad));
-            sb.append("--------------------------------------\n");
-        }
-
-        double promHoras = analisis.promedioHoras();
-        double promCalidad = analisis.promedioCalidad();
-        
-        sb.append("PROMEDIOS:\n");
-        sb.append(String.format("Horas: %s (%.1f hrs)%n", 
-                         repetirCaracter('■', (int) Math.round(promHoras)), promHoras));
-        sb.append(String.format("Calidad: %s (%.1f/10)%n", 
-                         repetirCaracter('★', (int) Math.round(promCalidad)), promCalidad));
-        
-        return sb.toString();
+    public Grafica(List<Double> horas, List<Double> calidad, List<String> fechas) {
+        this.horas = horas;
+        this.calidad = calidad;
+        this.fechas = fechas;
+        setPreferredSize(new Dimension(800, 400));
+        setBackground(Color.WHITE);
     }
-    
-    public static String generarGraficaTendencia(AnalisisSueno analisis) {
-        if (analisis == null || analisis.getRegistros().isEmpty()) {
-            return "No hay datos para mostrar la gráfica de tendencia.";
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
+        if (horas == null || horas.isEmpty()) {
+            g.drawString("No hay datos suficientes para mostrar la gráfica.", 20, 20);
+            return;
         }
-        
-        StringBuilder sb = new StringBuilder();
-        sb.append("\n=== GRÁFICA DE TENDENCIA DE SUEÑO ===\n");
 
-        List<RegistroSueno> registros = analisis.getRegistros();
+        Graphics2D g2 = (Graphics2D) g;
+        g2.setStroke(new BasicStroke(2));
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        int maxRegistros = Math.min(7, registros.size());
-        int maxHoras = 12; 
-        
-        for (int i = 0; i < maxRegistros; i++) {
-            RegistroSueno registro = registros.get(i);
-            String fecha = registro.getFecha().toString();
-            int horas = registro.getHorasSueno();
-            int calidad = registro.getCalidadSueno();
+        int w = getWidth();
+        int h = getHeight();
+        int margen = 50;
 
-            int longitudBarra = (int) Math.round((double) horas / maxHoras * 50);
-            
-            sb.append(String.format("%s: %s %d hrs | Calidad: %d/10%n", 
-                             fecha, 
-                             repetirCaracter('█', longitudBarra), 
-                             horas, 
-                             calidad));
+        double maxHoras = horas.stream().max(Double::compareTo).orElse(8.0);
+        double maxCalidad = calidad.stream().max(Double::compareTo).orElse(10.0);
+
+        int n = horas.size();
+        int espacio = (w - 2 * margen) / Math.max(1, n - 1);
+
+        // Ejes
+        g2.drawLine(margen, h - margen, w - margen, h - margen);
+        g2.drawLine(margen, margen, margen, h - margen);
+
+        // Líneas de horas (azul)
+        g2.setColor(new Color(66, 133, 244));
+        for (int i = 0; i < n - 1; i++) {
+            int x1 = margen + i * espacio;
+            int x2 = margen + (i + 1) * espacio;
+            int y1 = (int) (h - margen - (horas.get(i) / maxHoras) * (h - 2 * margen));
+            int y2 = (int) (h - margen - (horas.get(i + 1) / maxHoras) * (h - 2 * margen));
+            g2.drawLine(x1, y1, x2, y2);
+            g2.fillOval(x1 - 3, y1 - 3, 6, 6);
         }
-        
 
-        sb.append("\nEscala: Cada █ representa aproximadamente ");
-        sb.append(String.format("%.1f", maxHoras / 50.0));
-        sb.append(" horas\n");
-        
-        return sb.toString();
+        // Líneas de calidad (rojo)
+        g2.setColor(new Color(219, 68, 55));
+        for (int i = 0; i < n - 1; i++) {
+            int x1 = margen + i * espacio;
+            int x2 = margen + (i + 1) * espacio;
+            int y1 = (int) (h - margen - (calidad.get(i) / maxCalidad) * (h - 2 * margen));
+            int y2 = (int) (h - margen - (calidad.get(i + 1) / maxCalidad) * (h - 2 * margen));
+            g2.drawLine(x1, y1, x2, y2);
+            g2.fillOval(x1 - 3, y1 - 3, 6, 6);
+        }
+
+        // Fechas en el eje X
+        g2.setColor(Color.BLACK);
+        for (int i = 0; i < n; i++) {
+            int x = margen + i * espacio;
+            g2.drawString(fechas.get(i), x - 15, h - 20);
+        }
+
+        // Leyenda
+        g2.setColor(Color.BLACK);
+        g2.drawString("Horas de sueño", margen + 20, 30);
+        g2.setColor(new Color(66, 133, 244));
+        g2.fillRect(margen, 20, 10, 10);
+
+        g2.setColor(Color.BLACK);
+        g2.drawString("Calidad del sueño", margen + 150, 30);
+        g2.setColor(new Color(219, 68, 55));
+        g2.fillRect(margen + 130, 20, 10, 10);
     }
-    
-    public static String generarGraficaAvanzada(AnalisisSueno analisis) {
-        if (analisis == null || analisis.getRegistros().isEmpty()) {
-            return "No hay datos para mostrar la gráfica avanzada.";
-        }
-        
-        StringBuilder sb = new StringBuilder();
-        sb.append("\n══════════════════════════════════════════════\n");
-        sb.append("           GRÁFICA AVANZADA DE SUEÑO           \n");
-        sb.append("══════════════════════════════════════════════s\n");
-        sb.append("FECHA       HORAS  BARRAS DE SUEÑO      CALIDAD\n");
-        sb.append("────────────────────────────────────────────────\n");
-        
-        for (RegistroSueno registro : analisis.getRegistros()) {
-            String fecha = registro.getFecha().toString();
-            int horas = registro.getHorasSueno();
-            int calidad = registro.getCalidadSueno();
-            
-            String barraHoras = crearBarraProgreso(horas, 12, '█');
-            String barraCalidad = crearBarraProgreso(calidad, 10, '★');
-            
-            sb.append(String.format("%s  %2d hrs  %-20s  %s%n", 
-                             fecha, horas, barraHoras, barraCalidad));
-        }
-        
-        return sb.toString();
-    }
-    
-    private static String crearBarraProgreso(int valor, int max, char caracter) {
-        int longitud = (int) Math.round((double) valor / max * 20);
-        return repetirCaracter(caracter, longitud) + 
-               repetirCaracter('░', 20 - longitud) +
-               " " + valor + "/" + max;
-    }
-    
-    private static String repetirCaracter(char c, int veces) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < veces; i++) {
-            sb.append(c);
-        }
-        return sb.toString();
+
+    public void actualizarDatos(List<Double> horas, List<Double> calidad, List<String> fechas) {
+        this.horas = horas;
+        this.calidad = calidad;
+        this.fechas = fechas;
+        repaint();
     }
 }
