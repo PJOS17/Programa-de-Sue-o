@@ -1,6 +1,12 @@
+package controller;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import javax.swing.SwingUtilities;
+
+import model.RegistroSueno;
+import model.Usuario;
+import vista.GUISueno;
+import vista.VistaSueno;
 
 public class ControladorSueno {
     private Usuario usuario;

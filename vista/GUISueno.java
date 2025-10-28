@@ -1,7 +1,11 @@
+package vista;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
+
+import controller.AnalisisSueno;
+import model.RegistroSueno;
 
 public class GUISueno extends JFrame {
     private AnalisisSueno analisis;

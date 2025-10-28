@@ -1,3 +1,4 @@
+package model;
 public class Usuario {
     private String nombre;
     private int edad;

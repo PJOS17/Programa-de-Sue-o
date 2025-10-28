@@ -1,4 +1,8 @@
+package controller;
 import java.util.ArrayList;
+
+import model.RegistroSueno;
+import model.Usuario;
 
 public class AnalisisSueno {
     private ArrayList<RegistroSueno> registros;
