@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "VistaSueno",
+            "request": "launch",
+            "mainClass": "VistaSueno",
+            "projectName": "Programa-de-Sue-o-2_26a58200"
+        },
+        {
+            "type": "java",
             "name": "Current File",
             "request": "launch",
             "mainClass": "${file}"
