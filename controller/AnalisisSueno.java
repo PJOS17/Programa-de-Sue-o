@@ -3,6 +3,7 @@ import java.util.ArrayList;
 
 import model.RegistroSueno;
 import model.Usuario;
+import model.Problema;
 
 public class AnalisisSueno {
     private ArrayList<RegistroSueno> registros;
@@ -57,6 +58,7 @@ public class AnalisisSueno {
 
         return tendencia.toString();
     }
+
 
     public String generarRecomendaciones(Usuario u) {
         StringBuilder rec = new StringBuilder("Recomendaciones:\n");
