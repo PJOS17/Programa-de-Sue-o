@@ -1,17 +1,15 @@
 package vista;
+
 import java.awt.*;
 import java.util.List;
 import javax.swing.*;
+import model.RegistroSueno;
 
 public class Grafica extends JPanel {
-    private List<Double> horas;
-    private List<Double> calidad;
-    private List<String> fechas;
+    private List<RegistroSueno> registros;
 
-    public Grafica(List<Double> horas, List<Double> calidad, List<String> fechas) {
-        this.horas = horas;
-        this.calidad = calidad;
-        this.fechas = fechas;
+    public Grafica(List<RegistroSueno> registros) {
+        this.registros = registros;
         setPreferredSize(new Dimension(800, 400));
         setBackground(Color.WHITE);
     }
@@ -20,7 +18,7 @@ public class Grafica extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        if (horas == null || horas.isEmpty()) {
+        if (registros == null || registros.isEmpty()) {
             g.drawString("No hay datos suficientes para mostrar la gráfica.", 20, 20);
             return;
         }
@@ -33,11 +31,11 @@ public class Grafica extends JPanel {
         int h = getHeight();
         int margen = 50;
 
-        double maxHoras = horas.stream().max(Double::compareTo).orElse(8.0);
-        double maxCalidad = calidad.stream().max(Double::compareTo).orElse(10.0);
-
-        int n = horas.size();
+        int n = registros.size();
         int espacio = (w - 2 * margen) / Math.max(1, n - 1);
+
+        double maxHoras = registros.stream().mapToDouble(r -> r.getHorasSueno()).max().orElse(8.0);
+        double maxCalidad = registros.stream().mapToDouble(r -> r.getCalidadSueno()).max().orElse(10.0);
 
         // Ejes
         g2.drawLine(margen, h - margen, w - margen, h - margen);
@@ -48,8 +46,8 @@ public class Grafica extends JPanel {
         for (int i = 0; i < n - 1; i++) {
             int x1 = margen + i * espacio;
             int x2 = margen + (i + 1) * espacio;
-            int y1 = (int) (h - margen - (horas.get(i) / maxHoras) * (h - 2 * margen));
-            int y2 = (int) (h - margen - (horas.get(i + 1) / maxHoras) * (h - 2 * margen));
+            int y1 = (int) (h - margen - (registros.get(i).getHorasSueno() / maxHoras) * (h - 2 * margen));
+            int y2 = (int) (h - margen - (registros.get(i + 1).getHorasSueno() / maxHoras) * (h - 2 * margen));
             g2.drawLine(x1, y1, x2, y2);
             g2.fillOval(x1 - 3, y1 - 3, 6, 6);
         }
@@ -59,17 +57,19 @@ public class Grafica extends JPanel {
         for (int i = 0; i < n - 1; i++) {
             int x1 = margen + i * espacio;
             int x2 = margen + (i + 1) * espacio;
-            int y1 = (int) (h - margen - (calidad.get(i) / maxCalidad) * (h - 2 * margen));
-            int y2 = (int) (h - margen - (calidad.get(i + 1) / maxCalidad) * (h - 2 * margen));
+            int y1 = (int) (h - margen - (registros.get(i).getCalidadSueno() / maxCalidad) * (h - 2 * margen));
+            int y2 = (int) (h - margen - (registros.get(i + 1).getCalidadSueno() / maxCalidad) * (h - 2 * margen));
             g2.drawLine(x1, y1, x2, y2);
             g2.fillOval(x1 - 3, y1 - 3, 6, 6);
         }
 
-        // Fechas en el eje X
+        // Fechas y observaciones
         g2.setColor(Color.BLACK);
         for (int i = 0; i < n; i++) {
             int x = margen + i * espacio;
-            g2.drawString(fechas.get(i), x - 15, h - 20);
+            int y = h - 20;
+            g2.drawString(registros.get(i).getFecha().toString(), x - 15, y);
+            g2.drawString("Obs: " + registros.get(i).getObservaciones(), x - 30, y + 15);
         }
 
         // Leyenda
@@ -84,10 +84,8 @@ public class Grafica extends JPanel {
         g2.fillRect(margen + 130, 20, 10, 10);
     }
 
-    public void actualizarDatos(List<Double> horas, List<Double> calidad, List<String> fechas) {
-        this.horas = horas;
-        this.calidad = calidad;
-        this.fechas = fechas;
+    public void actualizarDatos(List<RegistroSueno> registros) {
+        this.registros = registros;
         repaint();
     }
 }
