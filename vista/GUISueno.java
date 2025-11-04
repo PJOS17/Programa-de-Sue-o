@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import javax.swing.*;
 import model.RegistroSueno;
 import model.Usuario;
+import model.Problema;
 
 public class GUISueno extends JFrame {
     private CardLayout cardLayout;
@@ -25,8 +26,6 @@ public class GUISueno extends JFrame {
 
     private Usuario usuario;
     private AnalisisSueno analisis;
-
-    // Campos de usuario
     private JTextField nombreField, edadField, generoField, pesoField, alturaField;
 
     public GUISueno(AnalisisSueno analisis) {
@@ -173,23 +172,42 @@ public class GUISueno extends JFrame {
         JTextField calidadField = new JTextField();
         JTextField observacionesField = new JTextField();
 
-        JButton btnGuardar = new JButton("Guardar");
-        btnGuardar.addActionListener(e -> {
-            try {
-                LocalDate fecha = LocalDate.parse(fechaField.getText().trim());
-                LocalTime dormir = LocalTime.parse(dormirField.getText().trim());
-                LocalTime despertar = LocalTime.parse(despertarField.getText().trim());
-                int calidad = Integer.parseInt(calidadField.getText().trim());
-                String obs = observacionesField.getText().trim();
+JButton btnGuardar = new JButton("Guardar");
+btnGuardar.addActionListener(e -> {
+    try {
+        LocalDate fecha = LocalDate.parse(fechaField.getText().trim());
+        LocalTime dormir = LocalTime.parse(dormirField.getText().trim());
+        LocalTime despertar = LocalTime.parse(despertarField.getText().trim());
+        int calidad = Integer.parseInt(calidadField.getText().trim());
+        String obs = observacionesField.getText().trim();
 
-                RegistroSueno reg = new RegistroSueno(usuario, fecha, dormir, despertar, calidad, obs);
-                analisis.agregarRegistro(reg);
-                JOptionPane.showMessageDialog(this, "Registro agregado correctamente.");
-                cardLayout.show(mainPanel, "Menu");
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
-            }
-        });
+        // Preguntar por problema de sueño
+        Problema problema = new Problema();
+        String[] opciones = problema.getProblemasSueno().toArray(new String[0]);
+
+        String seleccion = (String) JOptionPane.showInputDialog(
+            this,
+            "¿Tuviste algún problema durante el sueño?",
+            "Problema de Sueño",
+            JOptionPane.QUESTION_MESSAGE,
+            null,
+            opciones,
+            opciones[0]
+        );
+
+        if (seleccion != null) {
+            problema.setProblema(seleccion);
+            obs += " | Problema: " + problema.getProblemaDetectado();
+        }
+
+        RegistroSueno reg = new RegistroSueno(usuario, fecha, dormir, despertar, calidad, obs);
+        analisis.agregarRegistro(reg);
+        JOptionPane.showMessageDialog(this, "Registro agregado correctamente.");
+        cardLayout.show(mainPanel, "Menu");
+    } catch (Exception ex) {
+        JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+    }
+});
 
         JButton btnVolver = new JButton("Volver");
         btnVolver.addActionListener(e -> cardLayout.show(mainPanel, "Menu"));
@@ -304,24 +322,21 @@ public class GUISueno extends JFrame {
         mainPanel.add(graficaPanel, "Grafica");
     }
 
-    private void mostrarGrafica() {
-        graficaPanel.removeAll();
+private void mostrarGrafica() {
+    graficaPanel.removeAll();
 
-        List<Double> horas = analisis.getRegistros().stream().map(r -> (double) r.getHorasSueno()).collect(Collectors.toList());
-        List<Double> calidad = analisis.getRegistros().stream().map(r -> (double) r.getCalidadSueno()).collect(Collectors.toList());
-        List<String> fechas = analisis.getRegistros().stream().map(r -> r.getFecha().toString()).collect(Collectors.toList());
+    grafica = new Grafica(analisis.getRegistros()); // ahora pasa registros completos
 
-        grafica = new Grafica(horas, calidad, fechas);
-        JButton volver = new JButton("Volver");
-        volver.addActionListener(e -> cardLayout.show(mainPanel, "Menu"));
+    JButton volver = new JButton("Volver");
+    volver.addActionListener(e -> cardLayout.show(mainPanel, "Menu"));
 
-        graficaPanel.add(grafica, BorderLayout.CENTER);
-        graficaPanel.add(volver, BorderLayout.SOUTH);
-        graficaPanel.revalidate();
-        graficaPanel.repaint();
+    graficaPanel.add(grafica, BorderLayout.CENTER);
+    graficaPanel.add(volver, BorderLayout.SOUTH);
+    graficaPanel.revalidate();
+    graficaPanel.repaint();
 
-        cardLayout.show(mainPanel, "Grafica");
-    }
+    cardLayout.show(mainPanel, "Grafica");
+}
 
     private void mostrarRegistros() {
         if (analisis.getRegistros().isEmpty()) {
