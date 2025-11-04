@@ -25,8 +25,11 @@ public class RegistroSueno {
 
     public int calcularDuracion() {
         Duration dur = Duration.between(horaDormir, horaDespertar);
-        int horas = (int) dur.toHours();
-        return horas > 0 ? horas : 0;
+        // Si la hora de despertar es antes que la hora de dormir, significa que durmió hasta el día siguiente
+        if (dur.isNegative()) {
+            dur = dur.plusHours(24);
+        }
+        return (int) dur.toHours();
     }
 
     public int getHorasSueno() { return horasSueno; }

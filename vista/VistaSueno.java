@@ -1,9 +1,8 @@
 package vista;
+import controller.ControladorSueno;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Scanner;
-
-import controller.ControladorSueno;
 
 public class VistaSueno {
     private final Scanner sc = new Scanner(System.in);
