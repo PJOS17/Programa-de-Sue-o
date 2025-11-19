@@ -1,10 +1,12 @@
 package controller;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import javax.swing.SwingUtilities;
 
 import model.RegistroSueno;
 import model.Usuario;
+import model.Problema;
 import vista.GUISueno;
 import vista.VistaSueno;
 
@@ -51,7 +53,12 @@ public class ControladorSueno {
         int calidad = vista.leerCalidad();
         String obs = vista.leerObservaciones();
 
-        RegistroSueno registro = new RegistroSueno(usuario, fecha, dormir, despertar, calidad, obs);
+        // Pedir problema
+        vista.mostrarMensaje("Seleccione el problema de sueño:");
+        String problemaSeleccionado = vista.leerProblema(); // Vista debe implementar este método
+        Problema problema = new Problema(problemaSeleccionado);
+
+        RegistroSueno registro = new RegistroSueno(usuario, fecha, dormir, despertar, calidad, obs, problema);
         analisis.agregarRegistro(registro);
         vista.mostrarMensaje("Registro agregado correctamente.\n");
     }
@@ -101,7 +108,6 @@ public class ControladorSueno {
             }
         }
     }
-
 
     private void abrirGrafica() {
         SwingUtilities.invokeLater(() -> {

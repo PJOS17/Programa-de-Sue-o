@@ -1,30 +1,34 @@
 package model;
 
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Problema {
-    private ArrayList<String> problemasSueno;
     private String problemaDetectado;
+    private static final Map<String, Integer> penalizaciones = new HashMap<>();
 
-    public Problema() {
-        problemasSueno = new ArrayList<>();
-        problemasSueno.add("Insomnio");
-        problemasSueno.add("Pesadillas");
-        problemasSueno.add("Apnea del sueño");
-        problemasSueno.add("Narcolepsia");
-        problemasSueno.add("Sin problemas");
-        problemaDetectado = "Sin problemas";
+    // Inicializamos las penalizaciones para cada problema
+    static {
+        penalizaciones.put("Insomnio", 3);
+        penalizaciones.put("Pesadillas", 2);
+        penalizaciones.put("Apnea del sueño", 4);
+        penalizaciones.put("Narcolepsia", 3);
+        penalizaciones.put("Sin problemas", 0);
     }
 
-    public ArrayList<String> getProblemasSueno() {
-        return problemasSueno;
+    public Problema(String problemaDetectado) {
+        this.problemaDetectado = problemaDetectado;
     }
 
     public String getProblemaDetectado() {
         return problemaDetectado;
     }
 
-    public void setProblema(String problema) {
-        this.problemaDetectado = problema;
+    public int getPenalizacion() {
+        return penalizaciones.getOrDefault(problemaDetectado, 0);
+    }
+
+    public static Map<String, Integer> getListaProblemas() {
+        return penalizaciones;
     }
 }

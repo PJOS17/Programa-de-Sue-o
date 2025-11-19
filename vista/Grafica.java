@@ -65,6 +65,10 @@ public class Grafica extends JPanel {
 
                 g2.setColor(Color.BLACK);
                 g2.drawString(String.valueOf(calidad), x + 5, y - 5);
+                // Dibujar etiqueta de fecha si está disponible
+                if (fechas != null && i < fechas.size()) {
+                    g2.drawString(fechas.get(i), x + 5, height - margin + 15);
+                }
             }
         } else if (horasSueno != null && !horasSueno.isEmpty()) {
             barWidth = graphWidth / horasSueno.size();
@@ -80,6 +84,9 @@ public class Grafica extends JPanel {
 
                 g2.setColor(Color.BLACK);
                 g2.drawString(String.valueOf(calidad), x + 5, y - 5);
+                if (fechas != null && i < fechas.size()) {
+                    g2.drawString(fechas.get(i), x + 5, height - margin + 15);
+                }
             }
         }
     }

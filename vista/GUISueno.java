@@ -37,10 +37,8 @@ public class GUISueno extends JFrame {
     private JComboBox<String> cmbGenero;
     private JTextField txtPeso;
     private JTextField txtAltura;
-    private JCheckBox chkInsomnio;
-    private JCheckBox chkPesadillas;
-    private JCheckBox chkApnea;
-    private JCheckBox chkNarcolepsia;
+    // Problema seleccionado al registrar un sueño (se elige por registro)
+    private JComboBox<String> cmbProblemaRegistro;
     
     // Componentes de registro de sueño
     private JTextField txtFecha;
@@ -69,6 +67,15 @@ private Grafica grafica;
 
 public GUISueno(AnalisisSueno analisis) {
         this.analisis = analisis;
+        initComponents();
+    }
+
+    // Constructor que acepta directamente la lista de registros (usado por ControladorSueno)
+    public GUISueno(java.util.ArrayList<model.RegistroSueno> registros) {
+        this.analisis = new AnalisisSueno();
+        if (registros != null) {
+            this.analisis.getRegistros().addAll(registros);
+        }
         initComponents();
     }
     
@@ -169,26 +176,6 @@ public GUISueno(AnalisisSueno analisis) {
         gbc.gridx = 1;
         centerPanel.add(txtAltura, gbc);
         
-        // Problemas de sueño
-        gbc.gridx = 0; gbc.gridy = 6; gbc.gridwidth = 2;
-        JLabel lblProblemas = new JLabel("Problemas de sueño:");
-        lblProblemas.setFont(new Font("Arial", Font.BOLD, 12));
-        centerPanel.add(lblProblemas, gbc);
-        
-        JPanel problemasPanel = new JPanel(new GridLayout(2, 2, 5, 5));
-        problemasPanel.setBackground(Color.WHITE);
-        chkInsomnio = new JCheckBox("Insomnio");
-        chkPesadillas = new JCheckBox("Pesadillas");
-        chkApnea = new JCheckBox("Apnea del sueño");
-        chkNarcolepsia = new JCheckBox("Narcolepsia");
-        problemasPanel.add(chkInsomnio);
-        problemasPanel.add(chkPesadillas);
-        problemasPanel.add(chkApnea);
-        problemasPanel.add(chkNarcolepsia);
-        
-        gbc.gridy = 7;
-        centerPanel.add(problemasPanel, gbc);
-        
         // Botón Ingresar
         JButton btnIngresar = new JButton("Ingresar");
         btnIngresar.setBackground(new Color(76, 175, 80));
@@ -220,14 +207,8 @@ public GUISueno(AnalisisSueno analisis) {
                 return;
             }
             
-            // Obtener problemas de sueño
-            List<String> problemas = new ArrayList<>();
-            if (chkInsomnio.isSelected()) problemas.add("Insomnio");
-            if (chkPesadillas.isSelected()) problemas.add("Pesadillas");
-            if (chkApnea.isSelected()) problemas.add("Apnea del sueño");
-            if (chkNarcolepsia.isSelected()) problemas.add("Narcolepsia");
-            
-            usuario = new Usuario(nombre, edad, genero, peso, altura, problemas);
+            // No se registran problemas en el login; se elegirán por cada registro de sueño
+            usuario = new Usuario(nombre, edad, genero, peso, altura);
             JOptionPane.showMessageDialog(this, "¡Bienvenido " + nombre + "!");
             cardLayout.show(mainPanel, "menu");
         } catch (NumberFormatException ex) {
@@ -334,15 +315,22 @@ private void crearPanelRegistro() {
         spnCalidad = new JSpinner(new SpinnerNumberModel(7, 1, 10, 1));
         gbc.gridx = 1;
         formPanel.add(spnCalidad, gbc);
-        
-        // Observaciones
-        gbc.gridx = 0; gbc.gridy = 4;
-        formPanel.add(new JLabel("Observaciones:"), gbc);
-        txtObservaciones = new JTextArea(4, 20);
-        txtObservaciones.setLineWrap(true);
-        JScrollPane scroll = new JScrollPane(txtObservaciones);
-        gbc.gridx = 1;
-        formPanel.add(scroll, gbc);
+    // Problema (selección por registro)
+    gbc.gridx = 0; gbc.gridy = 4;
+    formPanel.add(new JLabel("Problema de sueño:"), gbc);
+    String[] problemasArr = model.Problema.getListaProblemas().keySet().toArray(new String[0]);
+    cmbProblemaRegistro = new JComboBox<>(problemasArr);
+    gbc.gridx = 1;
+    formPanel.add(cmbProblemaRegistro, gbc);
+
+    // Observaciones
+    gbc.gridx = 0; gbc.gridy = 5;
+    formPanel.add(new JLabel("Observaciones:"), gbc);
+    txtObservaciones = new JTextArea(4, 20);
+    txtObservaciones.setLineWrap(true);
+    JScrollPane scroll = new JScrollPane(txtObservaciones);
+    gbc.gridx = 1;
+    formPanel.add(scroll, gbc);
         
         registroPanel.add(formPanel, BorderLayout.CENTER);
         
@@ -369,7 +357,15 @@ private void crearPanelRegistro() {
             int calidad = (int) spnCalidad.getValue();
             String obs = txtObservaciones.getText().trim();
             
-            RegistroSueno registro = new RegistroSueno(usuario, fecha, dormir, despertar, calidad, obs);
+            // Obtener problema seleccionado desde el combo (por registro)
+            String problemaSeleccionado = "Sin problemas";
+            if (cmbProblemaRegistro != null && cmbProblemaRegistro.getSelectedItem() != null) {
+                problemaSeleccionado = (String) cmbProblemaRegistro.getSelectedItem();
+            }
+
+            Problema problema = new Problema(problemaSeleccionado);
+
+            RegistroSueno registro = new RegistroSueno(usuario, fecha, dormir, despertar, calidad, obs, problema);
             analisis.agregarRegistro(registro);
             
             JOptionPane.showMessageDialog(this, "Registro guardado exitosamente");
