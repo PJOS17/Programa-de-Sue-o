@@ -412,11 +412,32 @@ private void crearPanelRegistro() {
 
 private void actualizarHistorial() {
     modeloTabla.setRowCount(0);
+
     for (RegistroSueno r : analisis.getRegistros()) {
+
         String resumen = r.mostrarResumen();
-        String horaDormir = resumen.split("Dormir: ")[1].split(",")[0];
-        String horaDespertar = resumen.split("Despertar: ")[1].split(",")[0];
-        
+
+        String horaDormir = "N/A";
+        String horaDespertar = "N/A";
+
+        // Extraer hora dormir
+        if (resumen.contains("Dormir: ")) {
+            String[] partes = resumen.split("Dormir: ");
+            if (partes.length > 1) {
+                String[] sub = partes[1].split(",");
+                if (sub.length > 0) horaDormir = sub[0];
+            }
+        }
+
+        // Extraer hora despertar
+        if (resumen.contains("Despertar: ")) {
+            String[] partes = resumen.split("Despertar: ");
+            if (partes.length > 1) {
+                String[] sub = partes[1].split(",");
+                if (sub.length > 0) horaDespertar = sub[0];
+            }
+        }
+
         modeloTabla.addRow(new Object[]{
             r.getFecha(),
             horaDormir,

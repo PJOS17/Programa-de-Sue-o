@@ -11,7 +11,7 @@ public class RegistroSueno {
     private LocalTime horaDespertar;
     private int calidad;
     private String observaciones;
-    private Problema problema; // Nuevo atributo
+    private Problema problema;
 
     public RegistroSueno(Usuario usuario, LocalDate fecha, LocalTime horaDormir,
                          LocalTime horaDespertar, int calidad, String observaciones, Problema problema) {
@@ -32,13 +32,17 @@ public class RegistroSueno {
     public Problema getProblema() { return problema; }
 
     public double getHorasSueno() {
-        return Duration.between(horaDormir, horaDespertar).toHours() +
-               Duration.between(horaDormir, horaDespertar).toMinutesPart() / 60.0;
+        Duration dur = Duration.between(horaDormir, horaDespertar);
+
+        double horas = dur.toHours();
+        double minutos = dur.toMinutes() % 60;  // Java 8 compatible
+
+        return horas + (minutos / 60.0);
     }
 
     public int getCalidadSueno() {
         int ajustada = calidad - problema.getPenalizacion();
-        return Math.max(ajustada, 0); // Nunca menor a 0
+        return Math.max(ajustada, 0);
     }
 
     public String mostrarResumen() {
@@ -50,4 +54,3 @@ public class RegistroSueno {
                "\nObservaciones: " + observaciones;
     }
 }
-
